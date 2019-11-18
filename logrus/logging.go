@@ -14,7 +14,7 @@ import (
 
 	"go.opencensus.io/trace"
 
-	"github.com/antparcse/logging"
+	"github.com/golang-mixins/logging"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 )

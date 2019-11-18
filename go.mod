@@ -1,4 +1,4 @@
-module github.com/antparcse/logging
+module github.com/golang-mixins/logging
 
 go 1.13
 
