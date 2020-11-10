@@ -143,6 +143,7 @@ func New(breaker chan context.Context, level string, outputs ...string) (logging
 	if breaker == nil {
 		return nil, xerrors.New("breaker can't be nil")
 	}
+
 	logger := log.New()
 	logger.SetFormatter(&log.JSONFormatter{
 		TimestampFormat: "02.01.2006 15:04:05",
@@ -156,7 +157,8 @@ func New(breaker chan context.Context, level string, outputs ...string) (logging
 		},
 	},
 	)
-	writers := append(make([]io.Writer, 0, len(outputs)+1), os.Stdout)
+
+	writers := append(make([]io.Writer, 0, len(outputs)+1), os.Stderr)
 	for _, v := range outputs {
 		file, err := os.OpenFile(v, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
@@ -165,12 +167,15 @@ func New(breaker chan context.Context, level string, outputs ...string) (logging
 		writers = append(writers, file)
 	}
 	logger.Out = io.MultiWriter(writers...)
+
 	logger.SetReportCaller(true)
+
 	lvl, err := log.ParseLevel(level)
 	if err != nil {
 		return nil, xerrors.Errorf("error parse level value '%s': %w", level, err)
 	}
 	logger.SetLevel(lvl)
+
 	return &ContextLogger{
 		logger,
 		&sync.RWMutex{},
