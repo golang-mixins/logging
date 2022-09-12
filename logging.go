@@ -48,6 +48,8 @@ type Entry interface {
 	FromContext(ctx context.Context) Entry
 	// NewContext returns the new context with Entry.
 	NewContext(ctx context.Context) context.Context
+	// TruncateToMaxValueLength returns a value optimized for the maximum supported length.
+	TruncateToMaxValueLength(value []byte) []byte
 }
 
 // Logger provides logging functionality.

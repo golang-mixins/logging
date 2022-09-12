@@ -34,6 +34,9 @@ const (
 	PanicLevel string = "panic"
 )
 
+// GraylogMaxLenValue - defines the maximum length of a value.
+const GraylogMaxLenValue int = 31000
+
 type contextKey struct {
 	name string
 }
@@ -80,6 +83,15 @@ func (e *entry) NewContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, ctxValue, e)
 }
 
+// TruncateToMaxValueLength returns a value optimized for the maximum supported length.
+func (e *entry) TruncateToMaxValueLength(value []byte) []byte {
+	if len(value) <= GraylogMaxLenValue {
+		return value
+	}
+
+	return value[:GraylogMaxLenValue]
+}
+
 // ContextLogger implements log.Log.
 type ContextLogger struct {
 	*log.Logger
@@ -114,6 +126,15 @@ func (cl *ContextLogger) GracefulFatal(ctx context.Context) {
 	defer span.End()
 
 	go func() { defer func() { _ = recover() }(); cl.breaker <- ctx }()
+}
+
+// TruncateToMaxValueLength returns a value optimized for the maximum supported length.
+func (cl *ContextLogger) TruncateToMaxValueLength(value []byte) []byte {
+	if len(value) <= GraylogMaxLenValue {
+		return value
+	}
+
+	return value[:GraylogMaxLenValue]
 }
 
 // GetValues provides the current context of the instance.
